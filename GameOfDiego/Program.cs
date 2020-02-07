@@ -12,7 +12,7 @@ namespace GameOfDiego
         static async Task Main(string[] args)
         {
             var obj = new Name();
-            obj.name = "Diego3";
+            obj.name = "DiegoUltimate";
             string json = JsonConvert.SerializeObject(obj);
             using (var client = new HttpClient())
             {
@@ -26,7 +26,7 @@ namespace GameOfDiego
                 }
                 else
                 {
-                    Console.WriteLine("Error");
+                    Console.WriteLine("Error, name is already taken");
                 }
             }
 
