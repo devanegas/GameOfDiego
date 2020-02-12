@@ -2,6 +2,7 @@ using GameOfDiego;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 
 namespace GameOfDiegoTests
 {
@@ -108,10 +109,7 @@ namespace GameOfDiegoTests
             var service = new SolverService();
             var actual = service.SolveBoard(startingBoard);
 
-            foreach (Cell cell in actual)
-            {
-                Assert.That(expected.Any(c => c.x == cell.x && c.y == cell.y && c.IsAlive == cell.IsAlive));
-            }
+            actual.Should().BeEquivalentTo(expected);
         }
     }
 }

@@ -8,6 +8,71 @@ namespace GameOfDiego
 {
     public class SolverService
     {
+        public List<Cell> SolveBoard(List<Cell> cells)
+        {
+
+            //Create full board
+            var fullBoard = CreateFullBoard(cells);
+
+            //Decide Fate
+            var newCells = new List<Cell>();
+            foreach (Cell cell in fullBoard)
+            {
+                var neighbors = CheckNeighbors(fullBoard, cell);
+                var alive = DecideFate(cell, neighbors);
+
+                if(alive)
+                {
+                    newCells.Add(cell.BecomeAlive());
+                }
+                else
+                {
+                    newCells.Add(cell.Die());
+                }
+            }
+
+            //Set new board
+            var nextGen = CreateNextBoard(newCells);
+
+            return nextGen;
+
+        }
+
+        public List<Cell> CreateFullBoard(List<Cell> startingBoard)
+        {
+            List<Cell> fullBoard = new List<Cell>(startingBoard);
+            foreach (var cell in startingBoard)
+            {
+                List<Cell> comparisonCells = new List<Cell>{
+                    new Cell{ x = cell.x-1, y=cell.y-1 },
+                    new Cell{ x = cell.x-1, y=cell.y },
+                    new Cell{ x = cell.x-1, y=cell.y+1 },
+                    new Cell{ x = cell.x, y=cell.y-1 },
+                    new Cell{ x = cell.x, y=cell.y+1 },
+                    new Cell{ x = cell.x+1, y=cell.y-1 },
+                    new Cell{ x = cell.x+1, y=cell.y },
+                    new Cell{ x = cell.x+1, y=cell.y+1 },
+                };
+
+
+                //For every cell around a living cell
+                for (int i = 0; i < comparisonCells.Count; i++)
+                {
+                    if (fullBoard.Any(c => c.x == comparisonCells[i].x && c.y == comparisonCells[i].y))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        fullBoard.Add(comparisonCells[i]);
+                    }
+                }
+
+            }
+
+
+            return fullBoard;
+        }
         public int CheckNeighbors(List<Cell> startingBoard, Cell cell)
         {
             var aliveNeighbors = 0;
@@ -24,6 +89,8 @@ namespace GameOfDiego
 
             };
 
+            var alive2 = startingBoard.Count(c => comparisonCells.Any(d => d.x == c.x && d.y == c.y) && c.IsAlive == true);
+
             for (int i = 0; i < comparisonCells.Count; i++)
             {
                 if (startingBoard.Any(c=>c.x == comparisonCells[i].x && c.y == comparisonCells[i].y && c.IsAlive == true))
@@ -35,40 +102,7 @@ namespace GameOfDiego
             return aliveNeighbors;
         }
 
-        public List<Cell> CreateFullBoard(List<Cell> startingBoard)
-        {
-            List<Cell> fullBoard = new List<Cell>(startingBoard);
-            foreach (var cell in startingBoard){
-                List<Cell> comparisonCells = new List<Cell>{
-                    new Cell{ x = cell.x-1, y=cell.y-1 },
-                    new Cell{ x = cell.x-1, y=cell.y },
-                    new Cell{ x = cell.x-1, y=cell.y+1 },
-                    new Cell{ x = cell.x, y=cell.y-1 },
-                    new Cell{ x = cell.x, y=cell.y+1 },
-                    new Cell{ x = cell.x+1, y=cell.y-1 },
-                    new Cell{ x = cell.x+1, y=cell.y },
-                    new Cell{ x = cell.x+1, y=cell.y+1 },
-                };
 
-
-                //For every cell around a living cell
-                for (int i = 0; i < comparisonCells.Count; i++)
-                {
-                    if(fullBoard.Any(c=>c.x == comparisonCells[i].x && c.y == comparisonCells[i].y)){
-                        continue;
-                    }
-                    else
-                    {
-                        fullBoard.Add(comparisonCells[i]);
-                    }
-                }
-
-            }
-
-            //var transform = fullBoard.GroupBy(x => new { x.x, x.y, x.IsAlive }).Select(x => x.First()).ToList();
-
-            return fullBoard;
-        }
         public bool DecideFate(Cell cell, int neighbors)
         {
             if(cell.IsAlive == true)
@@ -110,27 +144,7 @@ namespace GameOfDiego
            return newCells.Where(c => c.IsAlive == true).ToList();
         }
 
-        public List<Cell> SolveBoard(List<Cell> cells)
-        {
-
-            //Create full board
-            var fullBoard = CreateFullBoard(cells);
-
-            //Decide Fate
-            var newCells = new List<Cell>();
-            foreach (Cell cell in fullBoard)
-            {
-                var neighbors = CheckNeighbors(fullBoard, cell);
-                cell.IsAlive = DecideFate(cell, neighbors);
-                newCells.Add(cell);
-            }
-
-            //Set new board
-            var nextGen = CreateNextBoard(newCells);
-
-            return nextGen;
-
-        }
+        
     }
 
 }
