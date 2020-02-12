@@ -92,8 +92,12 @@ namespace GameOfDiego
 
         private static async Task SolveBoard(string board)
         {
+            //Parse
             var cells = JsonConvert.DeserializeObject<List<Cell>>(board);
             cells.ForEach(c => c.IsAlive = true);
+            var service = new SolverService();
+            service.SolveBoard(cells);
+
         }
 
         private static int CheckNeighbors(List<Cell> startingBoard, Cell cell)
@@ -145,8 +149,6 @@ namespace GameOfDiego
         public int x { get; set; }
         public int y { get; set; }
         public bool IsAlive { get; set; }
-
-        public int NeighborCount { get; set; }
 
     }
 

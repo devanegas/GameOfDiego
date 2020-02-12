@@ -7,14 +7,14 @@ namespace GameOfDiegoTests
 {
     public class Tests
     {
-        public HashSet<Cell> startingBoard { get; set; }
+        public List<Cell> startingBoard { get; set; }
 
-        public HashSet<Cell> fullBoard { get; set; }
+        public List<Cell> fullBoard { get; set; }
 
         [SetUp]
         public void Setup()
         {
-            startingBoard = new HashSet<Cell>
+            startingBoard = new List<Cell>
             {
                 new Cell{x=-1, y=1, IsAlive=true},
                 new Cell{x=1, y=1, IsAlive=true},
@@ -24,7 +24,7 @@ namespace GameOfDiegoTests
                 new Cell{x=1, y=-1, IsAlive=true},
             };
 
-            fullBoard = new HashSet<Cell>
+            fullBoard = new List<Cell>
             {
                 new Cell{x=-2, y=-2, IsAlive=false},
                 new Cell{x=-2, y=-1, IsAlive=false},
@@ -91,8 +91,27 @@ namespace GameOfDiegoTests
             {  
                Assert.That(fullBoard.Any(c => c.x == cell.x && c.y == cell.y && c.IsAlive == cell.IsAlive));
             }
-            
+        }
+        
+        [Test]
+        public void Solver_Solves_Correctly()
+        {
+            var expected = new List<Cell>
+            {
+                new Cell{x=-1, y=0, IsAlive=true},
+                new Cell{x=1, y=1, IsAlive=true},
+                new Cell{x=1, y=0, IsAlive=true},
+                new Cell{x=1, y=-1, IsAlive=true},
+                new Cell{x=2, y=0, IsAlive=true},
+            };
 
+            var service = new SolverService();
+            var actual = service.SolveBoard(startingBoard);
+
+            foreach (Cell cell in actual)
+            {
+                Assert.That(expected.Any(c => c.x == cell.x && c.y == cell.y && c.IsAlive == cell.IsAlive));
+            }
         }
     }
 }
