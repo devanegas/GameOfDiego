@@ -146,6 +146,8 @@ namespace GameOfDiego
         public int y { get; set; }
         public bool IsAlive { get; set; }
 
+        public int NeighborCount { get; set; }
+
     }
 
 }
