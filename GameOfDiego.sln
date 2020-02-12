@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfDiego", "GameOfDiego\GameOfDiego.csproj", "{8FA5EEB2-5C50-4C0A-9369-8EFD34AF8476}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOfDiego", "GameOfDiego\GameOfDiego.csproj", "{8FA5EEB2-5C50-4C0A-9369-8EFD34AF8476}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfDiegoTests", "GameOfDiegoTests\GameOfDiegoTests.csproj", "{83C41C81-F1B4-415A-A427-DB733AE3642B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{8FA5EEB2-5C50-4C0A-9369-8EFD34AF8476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FA5EEB2-5C50-4C0A-9369-8EFD34AF8476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FA5EEB2-5C50-4C0A-9369-8EFD34AF8476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83C41C81-F1B4-415A-A427-DB733AE3642B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83C41C81-F1B4-415A-A427-DB733AE3642B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83C41C81-F1B4-415A-A427-DB733AE3642B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83C41C81-F1B4-415A-A427-DB733AE3642B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

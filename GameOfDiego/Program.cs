@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -8,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace GameOfDiego
 {
+
     public class Program
     {
+        public const string URL = "http://daybellphotography.com";
         static async Task Main(string[] args)
         {
             var name = new Name();
-            name.name = "Davanegas8";
+            name.name = "123452";
             var contents = await GetToken(name);
 
             if (contents == "Error")
@@ -29,12 +32,14 @@ namespace GameOfDiego
                 updateReq.token = token.token;
                 updateReq.clientStatus = "waiting";
                 var response = "";
+                dynamic json;
 
-                var timer = new System.Threading.Timer(async (e) =>
+                var timer = new Timer(async (e) =>
                 {
                     response = await PostToken(updateReq);
-                    Console.WriteLine(response);
-                    Console.WriteLine("Solving the board....");
+                    json = JsonConvert.DeserializeObject(response);
+                    await SolveBoard(json.seedBoard.ToString());
+                    
                     Thread.Sleep(2000);
                 }, null, startTimeSpan, periodTimeSpan);
 
@@ -51,7 +56,7 @@ namespace GameOfDiego
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(
-                    "http://daybellphotography.com/register",
+                    URL + "/register",
                      new StringContent(json, Encoding.UTF8, "application/json"));
                 if (response.IsSuccessStatusCode)
                 {
@@ -71,7 +76,7 @@ namespace GameOfDiego
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(
-                    "http://daybellphotography.com/update",
+                    URL + "/update",
                      new StringContent(json, Encoding.UTF8, "application/json"));
                 if (response.IsSuccessStatusCode)
                 {
@@ -83,6 +88,38 @@ namespace GameOfDiego
                     return "Error updating";
                 }
             }
+        }
+
+        private static async Task SolveBoard(string board)
+        {
+            var cells = JsonConvert.DeserializeObject<List<Cell>>(board);
+            cells.ForEach(c => c.IsAlive = true);
+        }
+
+        private static int CheckNeighbors(List<Cell> startingBoard, Cell cell)
+        {
+            var aliveNeighbors = 0;
+            List<Cell> comparisonCells = new List<Cell>{
+                new Cell{ x = cell.x-1, y=cell.y-1 },
+                new Cell{ x = cell.x, y=cell.y-1 },
+                new Cell{ x = cell.x+1, y=cell.y-1 },
+                new Cell{ x = cell.x-1, y=cell.y },
+                new Cell{ x = cell.x+1, y=cell.y },
+                new Cell{ x = cell.x-1, y=cell.y+1 },
+                new Cell{ x = cell.x, y=cell.y+1 },
+                new Cell{ x = cell.x+1, y=cell.y+1 },
+
+            };
+
+            for(int i=0; i<comparisonCells.Count; i++)
+            {
+                if (startingBoard.Contains(comparisonCells[i]))
+                {
+                    aliveNeighbors++;
+                }
+            }
+
+            return aliveNeighbors;
         }
     }
 
@@ -102,4 +139,13 @@ namespace GameOfDiego
         public string token { get; set; }
         public string clientStatus { get; set; }
     }
+
+    public class Cell 
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+        public bool IsAlive { get; set; }
+
+    }
+
 }
