@@ -16,7 +16,7 @@ namespace GameOfDiego
         static async Task Main(string[] args)
         {
             var name = new Name();
-            name.name = "123452";
+            name.name = "diegotest6";
             var contents = await GetToken(name);
 
             if (contents == "Error")
@@ -29,6 +29,7 @@ namespace GameOfDiego
                 var periodTimeSpan = TimeSpan.FromSeconds(1);
                 var token = JsonConvert.DeserializeObject<Token>(contents);
                 var updateReq = new UpdateRequest();
+                var stop = false;
                 updateReq.token = token.token;
                 updateReq.clientStatus = "waiting";
                 var response = "";
@@ -38,20 +39,27 @@ namespace GameOfDiego
                 {
                     response = await PostToken(updateReq);
                     json = JsonConvert.DeserializeObject(response);
-                    await SolveBoard(json.seedBoard.ToString());
-                    
-                    Thread.Sleep(2000);
+                    if (json.seedBoard.ToString() == "" || stop == true)
+                    {
+                        Console.WriteLine("Waiting for board to start");
+                    }
+                    else
+                    {
+                        await SolveBoard(json.seedBoard.ToString(), Int32.Parse(json.generationsToCompute.ToString()), updateReq.token);
+                        stop = true;
+                    }
+
                 }, null, startTimeSpan, periodTimeSpan);
 
                 Console.ReadLine();
-                
+
             }
 
         }
 
         private static async Task<string> GetToken(Name name)
         {
-            
+
             string json = JsonConvert.SerializeObject(name);
             using (var client = new HttpClient())
             {
@@ -90,40 +98,47 @@ namespace GameOfDiego
             }
         }
 
-        private static async Task SolveBoard(string board)
+        private static async Task<string> PostBoard(SubmissionJson submissionJson)
         {
-            //Parse
+            string json = JsonConvert.SerializeObject(submissionJson);
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(
+                    URL + "/update",
+                     new StringContent(json, Encoding.UTF8, "application/json"));
+                if (response.IsSuccessStatusCode)
+                {
+                    var contents = await response.Content.ReadAsStringAsync();
+                    return contents;
+                }
+                else
+                {
+                    return "Error posting";
+                }
+            }
+        }
+
+        private static async Task SolveBoard(string board, int nGenerations, string userToken)
+        {
             var cells = JsonConvert.DeserializeObject<List<Cell>>(board);
             cells.ForEach(c => c.IsAlive = true);
             var service = new SolverService();
-            service.SolveBoard(cells);
 
-        }
-
-        private static int CheckNeighbors(List<Cell> startingBoard, Cell cell)
-        {
-            var aliveNeighbors = 0;
-            List<Cell> comparisonCells = new List<Cell>{
-                new Cell{ x = cell.x-1, y=cell.y-1 },
-                new Cell{ x = cell.x, y=cell.y-1 },
-                new Cell{ x = cell.x+1, y=cell.y-1 },
-                new Cell{ x = cell.x-1, y=cell.y },
-                new Cell{ x = cell.x+1, y=cell.y },
-                new Cell{ x = cell.x-1, y=cell.y+1 },
-                new Cell{ x = cell.x, y=cell.y+1 },
-                new Cell{ x = cell.x+1, y=cell.y+1 },
-
-            };
-
-            for(int i=0; i<comparisonCells.Count; i++)
+            for (int i = 0; i < nGenerations; i++)
             {
-                if (startingBoard.Contains(comparisonCells[i]))
-                {
-                    aliveNeighbors++;
-                }
+                cells = service.SolveBoard(cells);
             }
 
-            return aliveNeighbors;
+
+            var resultBoard = new List<ResultBoard>();
+            foreach(var cell in cells)
+            {
+                resultBoard.Add(new ResultBoard { x = cell.x, y = cell.y });
+            }
+
+            var result = new SubmissionJson { token = userToken, GenerationsComputed = nGenerations, ResultBoard = resultBoard };
+            await PostBoard(result);
+
         }
     }
 
@@ -142,6 +157,19 @@ namespace GameOfDiego
     {
         public string token { get; set; }
         public string clientStatus { get; set; }
+    }
+
+    public class SubmissionJson
+    {
+        public string token { get; set; }
+        public int GenerationsComputed { get; set; }
+        public List<ResultBoard> ResultBoard { get; set; }
+    }
+
+    public class ResultBoard
+    {
+        public int x { get; set; }
+        public int y { get; set; }
     }
 
     public class Cell 
