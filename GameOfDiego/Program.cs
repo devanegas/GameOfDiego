@@ -12,11 +12,11 @@ namespace GameOfDiego
 
     public class Program
     {
-        public const string URL = "http://daybellphotography.com";
+        public const string URL = "http://localhost";
         static async Task Main(string[] args)
         {
             var name = new Name();
-            name.name = "diegotest6";
+            name.name = "DiegoWinner2";
             var contents = await GetToken(name);
 
             if (contents == "Error")
@@ -45,8 +45,8 @@ namespace GameOfDiego
                     }
                     else
                     {
-                        await SolveBoard(json.seedBoard.ToString(), Int32.Parse(json.generationsToCompute.ToString()), updateReq.token);
                         stop = true;
+                        SolveBoard(json.seedBoard.ToString(), Int32.Parse(json.generationsToCompute.ToString()), updateReq.token);
                     }
 
                 }, null, startTimeSpan, periodTimeSpan);
@@ -127,17 +127,18 @@ namespace GameOfDiego
             for (int i = 0; i < nGenerations; i++)
             {
                 cells = service.SolveBoard(cells);
+                Console.WriteLine("Solved generation:" + i);
             }
 
 
             var resultBoard = new List<ResultBoard>();
             foreach(var cell in cells)
-            {
+            { 
                 resultBoard.Add(new ResultBoard { x = cell.x, y = cell.y });
             }
 
             var result = new SubmissionJson { token = userToken, GenerationsComputed = nGenerations, ResultBoard = resultBoard };
-            await PostBoard(result);
+            PostBoard(result);
 
         }
     }
