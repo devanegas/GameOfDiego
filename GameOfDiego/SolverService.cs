@@ -87,9 +87,7 @@ namespace GameOfDiego
 
             };
 
-            var neighbors = startingBoard.Count(c => comparisonCells.Any(d => d.x == c.x && d.y == c.y) && c.IsAlive == true);
-
-            return neighbors;
+            return startingBoard.Count(c => comparisonCells.Any(d => d.x == c.x && d.y == c.y) && c.IsAlive == true);
         }
 
 
