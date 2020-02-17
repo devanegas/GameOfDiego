@@ -10,12 +10,12 @@ namespace GameOfDiego
     {
         public List<Cell> SolveBoard(List<Cell> cells)
         {
+            var newCells = new List<Cell>();
 
             //Create full board
             var fullBoard = CreateFullBoard(cells);
 
             //Decide Fate
-            var newCells = new List<Cell>();
             foreach (Cell cell in fullBoard)
             {
                 var neighbors = CheckNeighbors(fullBoard, cell);
