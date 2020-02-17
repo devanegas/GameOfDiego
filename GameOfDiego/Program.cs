@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -15,8 +16,8 @@ namespace GameOfDiego
         public const string URL = "http://localhost";
         static async Task Main(string[] args)
         {
-            var name = new Name();
-            name.name = "DiegoWinner2";
+            var name = GetRandomName();
+
             var contents = await GetToken(name);
 
             if (contents == "Error")
@@ -41,7 +42,6 @@ namespace GameOfDiego
                     json = JsonConvert.DeserializeObject(response);
                     if (json.seedBoard.ToString() == "" || stop == true)
                     {
-                        Console.WriteLine("Waiting for board to start");
                     }
                     else
                     {
@@ -55,6 +55,17 @@ namespace GameOfDiego
 
             }
 
+        }
+
+        private static Name GetRandomName()
+        {
+            var name = new Name();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            var randomString = new string(Enumerable.Repeat(chars, 5).Select(s => s[random.Next(s.Length)]).ToArray());
+            name.name = "Diego#" + randomString;
+
+            return name;
         }
 
         private static async Task<string> GetToken(Name name)
@@ -127,7 +138,6 @@ namespace GameOfDiego
             for (int i = 0; i < nGenerations; i++)
             {
                 cells = service.SolveBoard(cells);
-                Console.WriteLine("Solved generation:" + i);
             }
 
 

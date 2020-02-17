@@ -74,9 +74,7 @@ namespace GameOfDiego
             return fullBoard;
         }
         public int CheckNeighbors(List<Cell> startingBoard, Cell cell)
-        {
-            var aliveNeighbors = 0;
-            
+        {   
             List<Cell> comparisonCells = new List<Cell>{
                 new Cell{ x = cell.x-1, y=cell.y-1 },
                 new Cell{ x = cell.x, y=cell.y-1 },
@@ -89,17 +87,9 @@ namespace GameOfDiego
 
             };
 
-            var alive2 = startingBoard.Count(c => comparisonCells.Any(d => d.x == c.x && d.y == c.y) && c.IsAlive == true);
+            var neighbors = startingBoard.Count(c => comparisonCells.Any(d => d.x == c.x && d.y == c.y) && c.IsAlive == true);
 
-            for (int i = 0; i < comparisonCells.Count; i++)
-            {
-                if (startingBoard.Any(c=>c.x == comparisonCells[i].x && c.y == comparisonCells[i].y && c.IsAlive == true))
-                {
-                    aliveNeighbors++;
-                }
-            }
-
-            return aliveNeighbors;
+            return neighbors;
         }
 
 
